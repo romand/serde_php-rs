@@ -199,6 +199,60 @@
 //! assert_eq!(profile, orig);
 //! ```
 
+// Rustc lints
+// <https://doc.rust-lang.org/rustc/lints/listing/allowed-by-default.html>
+#![warn(
+    anonymous_parameters,
+    bare_trait_objects,
+    elided_lifetimes_in_paths,
+    rust_2018_idioms,
+    trivial_casts,
+    trivial_numeric_casts,
+    unsafe_code,
+    unused_extern_crates,
+    unused_import_braces
+)]
+// Clippy lints
+// <https://rust-lang.github.io/rust-clippy/current/>
+#![warn(
+    clippy::all,
+    clippy::dbg_macro,
+    clippy::float_cmp_const,
+    clippy::get_unwrap,
+    clippy::mem_forget,
+    clippy::nursery,
+    clippy::pedantic,
+    clippy::todo,
+    clippy::unwrap_used,
+    clippy::wrong_pub_self_convention
+)]
+// Allow some clippy lints
+#![allow(
+    clippy::default_trait_access,
+    clippy::doc_markdown,
+    clippy::if_not_else,
+    clippy::must_use_candidate,
+    clippy::needless_pass_by_value,
+    clippy::pub_enum_variant_names,
+    clippy::use_self,
+    clippy::cargo_common_metadata,
+    clippy::missing_errors_doc,
+    clippy::enum_glob_use,
+    clippy::struct_excessive_bools,
+    clippy::module_name_repetitions,
+    clippy::used_underscore_binding,
+    clippy::future_not_send,
+    clippy::missing_const_for_fn,
+    clippy::type_complexity,
+    clippy::option_if_let_else,
+    clippy::shadow_unrelated
+)]
+// Allow some lints while testing
+#![cfg_attr(
+    test,
+    allow(clippy::unwrap_used, clippy::blacklisted_name, clippy::float_cmp)
+)]
+
 mod de;
 mod error;
 mod ser;

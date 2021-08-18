@@ -110,12 +110,9 @@ impl<R: Read> Lookahead1<R> {
 
     /// Read a `-` or `+` sign into a buffer, if present.
     fn collect_sign(&mut self, buf: &mut SmallVec<[u8; 32]>) -> Result<()> {
-        match self.peek()? {
-            Some(c @ b'+') | Some(c @ b'-') => {
-                buf.push(c);
-                self.expect(c)?;
-            }
-            _ => (),
+        if let Some(c @ (b'+' | b'-')) = self.peek()? {
+            buf.push(c);
+            self.expect(c)?;
         }
 
         Ok(())
@@ -206,7 +203,7 @@ fn parse_bytes<E, T: std::str::FromStr<Err = E>, B: AsRef<[u8]>>(buf: B) -> Resu
 where
     E: std::fmt::Display + std::error::Error + Send + Sync + 'static,
 {
-    let s = std::str::from_utf8(buf.as_ref()).map_err(Error::Utf8Error)?;
+    let s = std::str::from_utf8(buf.as_ref()).map_err(Error::NotUtf8String)?;
     s.parse()
         .map_err(|e: E| Error::NotAValidNumber(Box::new(e)))
 }
@@ -307,7 +304,7 @@ where
                 // hashmaps and variant types.
 
                 let rval = match self.input.peek()? {
-                    Some(b'i') | Some(b'}') => {
+                    Some(b'i' | b'}') => {
                         // Numeric or empty array.
                         visitor.visit_seq(ArraySequence::new(&mut self, num_elements))
                     }
@@ -362,7 +359,8 @@ where
         // Actual UTF-8 strings are not a thing in PHP, but we offer this conversion
         // as a convenience.
         let raw = self.input.read_raw_string()?;
-        visitor.visit_string(String::from_utf8(raw).map_err(|e| Error::Utf8Error(e.utf8_error()))?)
+        visitor
+            .visit_string(String::from_utf8(raw).map_err(|e| Error::NotUtf8String(e.utf8_error()))?)
     }
 
     #[inline]
@@ -577,6 +575,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::bool_assert_comparison)]
     fn deserialize_bool() {
         assert_deserializes!(bool, b"b:0;", false);
         assert_deserializes!(bool, b"b:1;", true);

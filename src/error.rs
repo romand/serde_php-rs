@@ -28,7 +28,7 @@ pub enum Error {
         actual: char,
     },
     /// Deserialized bytestring is not valid UTF: {0}
-    Utf8Error(std::str::Utf8Error),
+    NotUtf8String(std::str::Utf8Error),
     /// Could not convert into char from decimal value: {0}
     CharConversionFailed(std::char::CharTryFromError),
     /// Not a valid number or incorrect number type: {0}
@@ -66,9 +66,8 @@ pub enum Error {
 impl std::error::Error for Error {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
-            Error::WriteSerialized(ref err) => Some(err),
-            Error::ReadSerialized(ref err) => Some(err),
-            Error::Utf8Error(ref err) => Some(err),
+            Error::WriteSerialized(ref err) | Error::ReadSerialized(ref err) => Some(err),
+            Error::NotUtf8String(ref err) => Some(err),
             Error::CharConversionFailed(ref err) => Some(err),
             Error::NotAValidNumber(ref err) => Some(err.as_ref()),
             _ => None,

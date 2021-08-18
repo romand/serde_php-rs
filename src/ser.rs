@@ -480,20 +480,20 @@ mod tests {
 
     #[test]
     fn serialize_integer() {
-        assert_serializes!(-1i64, b"i:-1;");
-        assert_serializes!(0i64, b"i:0;");
-        assert_serializes!(1i64, b"i:1;");
-        assert_serializes!(123i64, b"i:123;");
+        assert_serializes!(-1_i64, b"i:-1;");
+        assert_serializes!(0_i64, b"i:0;");
+        assert_serializes!(1_i64, b"i:1;");
+        assert_serializes!(123_i64, b"i:123;");
     }
 
     #[test]
     fn serialize_float() {
-        assert_serializes!(-1f64, b"d:-1;");
-        assert_serializes!(0f64, b"d:0;");
-        assert_serializes!(1f64, b"d:1;");
-        assert_serializes!(-1.9f64, b"d:-1.9;");
-        assert_serializes!(0.9f64, b"d:0.9;");
-        assert_serializes!(1.9f64, b"d:1.9;");
+        assert_serializes!(-1_f64, b"d:-1;");
+        assert_serializes!(0_f64, b"d:0;");
+        assert_serializes!(1_f64, b"d:1;");
+        assert_serializes!(-1.9_f64, b"d:-1.9;");
+        assert_serializes!(0.9_f64, b"d:0.9;");
+        assert_serializes!(1.9_f64, b"d:1.9;");
     }
 
     #[test]
