@@ -86,7 +86,7 @@ impl fmt::Display for Error {
                 write!(f, "Expected `{}` but got `{}` instead", expected, actual)
             }
             ExpectedDigit { actual } => write!(f, "Expected a digit, but got `{}` instead", actual),
-            Utf8Error(err) => write!(f, "Deserialized bytestring is not valid UTF: {}", err),
+            NotUtf8String(err) => write!(f, "Deserialized bytestring is not valid UTF: {}", err),
             CharConversionFailed(err) => {
                 write!(f, "Could not convert into char from decimal value: {}", err)
             }
