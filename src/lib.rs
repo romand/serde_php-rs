@@ -244,8 +244,7 @@
     clippy::future_not_send,
     clippy::missing_const_for_fn,
     clippy::type_complexity,
-    clippy::option_if_let_else,
-    clippy::shadow_unrelated
+    clippy::option_if_let_else
 )]
 // Allow some lints while testing
 #![cfg_attr(

@@ -233,11 +233,11 @@ where
         // See https://stackoverflow.com/questions/14297926/structure-of-a-serialized-php-string
         match sym {
             b'b' => {
-                let val = self.input.read1()?;
+                let value = self.input.read1()?;
                 self.input.expect(b';')?;
 
                 // Boolean.
-                match val {
+                match value {
                     b'0' => visitor.visit_bool(false),
                     b'1' => visitor.visit_bool(true),
                     c => Err(Error::InvalidBooleanValue(char::from(c))),
@@ -578,12 +578,12 @@ mod tests {
     use std::collections::HashMap;
 
     macro_rules! assert_deserializes {
-        ($ty:ty, $input:expr, $expected:expr) => {
+        ($ty:ty, $input:expr, $expected:expr) => {{
             // TODO: It's not feasible to infer the type here, compare
             //       `deserialize_php_string` and `deserialize_string`.gi
             let actual: $ty = from_bytes($input).expect("deserialization failed");
             assert_eq!(actual, $expected);
-        };
+        }};
     }
 
     #[test]
@@ -612,7 +612,7 @@ mod tests {
         assert_deserializes!(f64, b"d:3.0e-15;", 3.0E-15);
         assert_deserializes!(f64, b"d:3.0e15;", 3.0E15);
         assert_deserializes!(f64, b"d:3.0e+15;", 3.0E+15);
-        assert_deserializes!(f64, b"d:3.0000000000000004E-5;", 3.0000000000000004E-5);
+        assert_deserializes!(f64, b"d:3.0000000000000004E-5;", 3.000_000_000_000_000_4E-5);
     }
 
     #[test]
