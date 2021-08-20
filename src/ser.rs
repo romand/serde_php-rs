@@ -1,4 +1,5 @@
 use crate::error::{Error, Result};
+use ryu::Buffer;
 use serde::{ser, Serialize};
 use std::io::Write;
 
@@ -120,9 +121,10 @@ where
 
     #[inline]
     fn serialize_f64(self, v: f64) -> Result<()> {
-        // Float representations _should_ match up.
-        // TODO: Verify this prints edges correctly.
-        write!(self.output, "d:{};", v).map_err(Error::WriteSerialized)
+        // For some floats php `serialize` output differs, for example
+        // php will serialize 0 as "d:0;", not "d:0.0;"
+        // but deserialization must always produce the correct value
+        write!(self.output, "d:{};", Buffer::new().format(v)).map_err(Error::WriteSerialized)
     }
 
     #[inline]

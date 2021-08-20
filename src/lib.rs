@@ -388,4 +388,113 @@ mod tests {
             roundtrip!(HashMap<String, String>, v);
         }
     }
+
+    use std::io::prelude::*;
+    use std::io::Result;
+    use std::io::SeekFrom;
+    use std::process::Command;
+    use tempfile::tempfile;
+
+    fn through_php(bytes: &[u8]) -> Result<Vec<u8>> {
+        let mut file = tempfile()?;
+        file.write_all(bytes)?;
+        file.seek(SeekFrom::Start(0))?;
+
+        let res = Command::new("php")
+            .stdin(file)
+            .args(&[
+                "-r",
+                "print(serialize(unserialize(file_get_contents('php://stdin'))));",
+            ])
+            .output()?;
+
+        Ok(res.stdout)
+    }
+
+    macro_rules! php_roundtrip {
+        ($ty:ty, $value:expr) => {
+            let val = $value;
+            let serialized = to_vec(&val).expect("Serialization failed");
+            eprintln!(
+                "serialized={:?}",
+                String::from_utf8_lossy(serialized.as_slice())
+            );
+            let output = through_php(serialized.as_slice()).expect("Failed to deser&ser with php");
+            eprintln!("output={:?}", String::from_utf8_lossy(output.as_slice()));
+            let deserialized: $ty = from_bytes(output.as_slice()).expect("Deserialization failed");
+            // php output will differ sometimes, only checking that deserialized value is correct
+            // assert_eq!(serialized, output);
+            assert_eq!(deserialized, val);
+        };
+    }
+
+    proptest! {
+        #[test]
+        #[ignore]
+        fn php_roundtrip_unit(v in any::<()>()) {
+            php_roundtrip!((), v);
+        }
+
+        #[test]
+        #[ignore]
+        fn php_roundtrip_bool(v in any::<bool>()) {
+            php_roundtrip!(bool, v);
+        }
+
+        #[test]
+        #[ignore]
+        fn php_roundtrip_i64(v in any::<f64>()) {
+            php_roundtrip!(f64, v);
+        }
+
+        #[test]
+        #[ignore]
+        fn php_roundtrip_u64(v in any::<f64>()) {
+            php_roundtrip!(f64, v);
+        }
+
+        #[test]
+        #[ignore]
+        fn php_roundtrip_f64(v in any::<f64>()) {
+            php_roundtrip!(f64, v);
+        }
+
+        #[test]
+        fn php_roundtrip_char(v in any::<char>()) {
+            php_roundtrip!(char, v);
+        }
+
+        #[test]
+        #[ignore]
+        fn php_roundtrip_string(v in any::<String>()) {
+            php_roundtrip!(String, v);
+        }
+
+        #[test]
+        #[ignore]
+        fn php_roundtrip_option(v in any::<Option<i32>>()) {
+            php_roundtrip!(Option<i32>, v);
+        }
+
+        #[test]
+        #[ignore]
+        fn php_roundtrip_same_type_tuple(v in any::<(u32, u32)>()) {
+            php_roundtrip!((u32, u32), v);
+        }
+
+        #[test]
+        #[ignore]
+        fn php_roundtrip_mixed_type_tuple(v in any::<(String, i32)>()) {
+            php_roundtrip!((String, i32), v);
+        }
+
+        // that'd fail on input: v = {"0": ""} because php
+        // serialized="a:1:{s:1:\"0\";s:0:\"\";}"
+        // output="a:1:{i:0;s:0:\"\";}"
+        // #[test]
+        // #[ignore]
+        // fn php_roundtrip_string_string_hashmap(v in proptest::collection::hash_map(any::<String>(), any::<String>(), 0..100)) {
+        //     php_roundtrip!(HashMap<String, String>, v);
+        // }
+    }
 }
