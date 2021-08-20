@@ -85,7 +85,7 @@
 //!
 //! ```rust
 //! use serde::Deserialize;
-//! use serde_php::from_bytes;
+//! use php_serde::from_bytes;
 //!
 //! #[derive(Debug, Deserialize, Eq, PartialEq)]
 //! struct Data(Vec<u8>, Vec<u8>, SubData);
@@ -116,7 +116,7 @@
 //!
 //! ```rust
 //!# use serde::Deserialize;
-//!# use serde_php::from_bytes;
+//!# use php_serde::from_bytes;
 //! #[derive(Debug, Deserialize, Eq, PartialEq)]
 //! struct Outer {
 //!     foo: bool,
@@ -176,7 +176,7 @@
 //!
 //! ```rust
 //! use serde::{Deserialize, Serialize};
-//! use serde_php::{to_vec, from_bytes};
+//! use php_serde::{to_vec, from_bytes};
 //!
 //! #[derive(Debug, Deserialize, Eq, PartialEq, Serialize)]
 //! struct UserProfile {

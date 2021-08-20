@@ -38,7 +38,7 @@ pub enum Error {
     UnsupportedArrayKeyType(char),
     /// Invalid type indicator on value.
     InvalidTypeIndicator(char),
-    /// Feature not implemented by `serde_php`.
+    /// Feature not implemented by `php_serde`.
     MissingFeature(&'static str),
     /// Array-index mismatch: must be in-order and numeric.
     IndexMismatch {
@@ -96,7 +96,7 @@ impl fmt::Display for Error {
             InvalidBooleanValue(ch) => write!(f, "Not a valid value for boolean: {}", ch),
             UnsupportedArrayKeyType(ch) => write!(f, "Unsupported array key type: {}", ch),
             InvalidTypeIndicator(ch) => write!(f, "Invalid type indicator on value: {}", ch),
-            MissingFeature(feat) => write!(f, "Feature not implemented by `serde_php`: {}", feat),
+            MissingFeature(feat) => write!(f, "Feature not implemented by `php_serde`: {}", feat),
             IndexMismatch { expected, actual } => write!(
                 f,
                 "Array-index mismatch, expected {} but got {}",
